@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 用户反馈分析助手</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="页面导航">
+        <div class="brand-block">
+          <div class="brand-mark">AI</div>
+          <div>
+            <div class="brand-title">用户反馈分析助手</div>
+          </div>
+        </div>
+        <nav class="nav-list">
+          <a href="#analyzer" class="nav-link active">AI 分析台</a>
+          <a href="#overview" class="nav-link">概览</a>
+          <a href="#compare" class="nav-link">产品对比</a>
+          <a href="#distribution" class="nav-link">问题分布</a>
+          <a href="#issues" class="nav-link">问题优化池</a>
+          <a href="#selling" class="nav-link">卖点池</a>
+          <a href="#evidence" class="nav-link">证据库</a>
+          <a href="#report" class="nav-link">总结报告</a>
+          <a href="#fields" class="nav-link">字段说明</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <section class="topbar">
+          <div>
+            <p class="eyebrow">AI Product Ops Portfolio</p>
+            <h1>AI 用户反馈分析助手</h1>
+            <p class="lead">
+              当前为公开演示版，用于展示完整产品界面；AI 分析台仅展示流程，上传、API 分析和下载保留在本地网页MVP中。
+            </p>
+          </div>
+        </section>
+
+        <section class="filters" aria-label="全局筛选">
+          <label>
+            产品
+            <select id="filterProduct"></select>
+          </label>
+          <label>
+            用户态度
+            <select id="filterSentiment"></select>
+          </label>
+          <label>
+            严重程度
+            <select id="filterSeverity"></select>
+          </label>
+          <label>
+            购买影响
+            <select id="filterPurchase"></select>
+          </label>
+          <label class="search-label">
+            搜索证据
+            <input id="searchInput" type="search" placeholder="搜索原文、标签、反馈点" />
+          </label>
+          <button id="resetFilters" class="icon-button" type="button" title="重置筛选" aria-label="重置筛选">
+            ↺
+          </button>
+        </section>
+
+        <section id="analyzer" class="section-block analyzer-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">AI Analyzer</p>
+              <h2>AI 分析台</h2>
+            </div>
+            <p>当前版本AI 分析台禁用；上传、API 分析和下载功能仅在本地版开放。</p>
+          </div>
+
+          <div class="demo-lock-banner" role="note">
+            <strong>公开演示模式</strong>
+            <span>当前页面可浏览完整看板和 AI 分析台流程，上传、API 分析和下载功能已锁定。</span>
+          </div>
+
+          <div class="analyzer-grid">
+            <div class="analyzer-panel">
+              <h3>1. 批量导入数据</h3>
+              <p class="helper-text">支持 .xlsx / .csv / .tsv。批量文件需包含：产品代号、产品名称、平台、评论原文；可从 Excel 按模板整理后上传。</p>
+              <input id="uploadFile" type="file" accept=".csv,.tsv,.txt,.xlsx,.xls" disabled />
+              <div class="template-box" aria-label="批量数据模板">
+                <div class="template-title">批量数据模板</div>
+                <div class="template-table">
+                  <span>产品代号</span>
+                  <span>产品名称</span>
+                  <span>平台</span>
+                  <span>评论原文</span>
+                  <span>产品A</span>
+                  <span>示例产品</span>
+                  <span>天猫</span>
+                  <span>这里粘贴一条用户评论原文</span>
+                </div>
+              </div>
+              <div class="single-comment-block">
+                <h3>单条评论临时分析</h3>
+                <p class="helper-text">只粘贴一条评论原文，适合快速测试标签和优化方向；结果不会进入下方看板。</p>
+                <textarea id="singleCommentInput" rows="5" placeholder="公开演示版仅展示入口，不开放临时分析。" disabled></textarea>
+                <button id="runSingleComment" class="secondary-button" type="button" disabled>分析单条评论</button>
+                <div id="singleCommentResult" class="single-result"></div>
+              </div>
+            </div>
+
+            <div class="analyzer-panel">
+              <h3>2. 字段识别与模型</h3>
+              <div class="mapping-box">
+                <p class="helper-text compact">系统会自动识别批量文件字段；识别错误时可手动调整。</p>
+                <div class="mapping-grid">
+                  <label>评论原文列<select id="mapComment" disabled></select></label>
+                  <label>产品代号列<select id="mapProductCode" disabled></select></label>
+                  <label>产品名称列<select id="mapProductName" disabled></select></label>
+                  <label>平台列<select id="mapPlatform" disabled></select></label>
+                </div>
+              </div>
+              <label>Gemini API Key<input id="geminiKey" type="password" placeholder="公开演示版不开放 API Key" disabled /></label>
+              <div class="mapping-grid two">
+                <label>模型<input id="geminiModel" value="gemini-2.5-flash" disabled /></label>
+                <label>每批条数<input id="batchSize" type="number" min="1" max="20" value="5" disabled /></label>
+              </div>
+              <div class="button-row">
+                <button id="runSample" class="secondary-button" type="button" disabled>先跑 5 条测试</button>
+                <button id="runAll" class="primary-button" type="button" disabled>开始全量分析</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-note" id="previewNote"></div>
+          <div class="table-wrap preview-wrap">
+            <table id="importPreview"></table>
+          </div>
+          <div class="button-row export-row">
+            <button id="useDemoData" class="secondary-button" type="button" disabled>恢复原始数据</button>
+            <button id="downloadAnalysis" class="secondary-button" type="button" disabled>下载分析结果 CSV</button>
+          </div>
+        </section>
+
+        <section id="overview" class="section-block">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Overview</p>
+              <h2>概览看板</h2>
+            </div>
+            <p>先判断样本规模、有效反馈和每个产品的风险结构。</p>
+          </div>
+          <div id="metricGrid" class="metric-grid"></div>
+          <div id="productCards" class="product-grid"></div>
+        </section>
+
+        <section id="compare" class="section-block">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Comparison</p>
+              <h2>产品对比</h2>
+            </div>
+            <p>横向比较负向占比、高严重占比和购买影响占比。</p>
+          </div>
+          <div id="comparisonBars" class="compare-grid"></div>
+          <div class="table-wrap">
+            <table id="comparisonTable"></table>
+          </div>
+        </section>
+
+        <section id="distribution" class="section-block">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Distribution</p>
+              <h2>问题分布</h2>
+            </div>
+            <p>把零散评论拆成一级问题和二级标签结构。</p>
+          </div>
+          <div id="distributionGrid" class="distribution-grid"></div>
+        </section>
+
+        <section id="issues" class="section-block">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Priority Pool</p>
+              <h2>问题优化池</h2>
+            </div>
+            <p>仅统计负向和复杂反馈，按优先级分排序。</p>
+          </div>
+          <div id="issueCards" class="card-list"></div>
+        </section>
+
+        <section id="selling" class="section-block">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Selling Points</p>
+              <h2>卖点池</h2>
+            </div>
+            <p>只统计正向反馈，用真实评论支撑卖点和表达方向。</p>
+          </div>
+          <div id="sellingCards" class="card-list"></div>
+        </section>
+
+        <section id="evidence" class="section-block">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Evidence</p>
+              <h2>证据库</h2>
+            </div>
+            <p id="evidenceCount">所有结论都可以回溯到原文证据。</p>
+          </div>
+          <div class="table-wrap evidence-table-wrap">
+            <table id="evidenceTable"></table>
+          </div>
+        </section>
+
+        <section id="report" class="section-block">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Ops Report</p>
+              <h2>产品运营总结报告</h2>
+            </div>
+            <p>基于当前数据自动生成产品运营总结报告</p>
+          </div>
+          <div id="operationReport" class="report-summary"></div>
+        </section>
+
+        <section id="fields" class="section-block">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Field Guide</p>
+              <h2>字段说明</h2>
+            </div>
+            <p>解释标签、态度、严重程度和优先级口径。</p>
+          </div>
+          <div id="fieldGuide" class="field-grid"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="./data.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
